@@ -26,8 +26,6 @@ def dataEntry2():
               (idfordb, time.time(), date, keyword, value))
     conn.commit()
 
-
-
 def readData():
     sql = "SELECT * FROM stuffToPlot WHERE keyword =? AND source =?" #consulta p 2 variaveis
     wordUsed = 'Python Sentiment'
