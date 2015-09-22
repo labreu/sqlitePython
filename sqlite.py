@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 pd.options.display.mpl_style = 'default'
 import numpy as np
-conn = sqlite3.connect('/Users/Lucas/Downloads/Banco.db')
+conn = sqlite3.connect('/Users/Lucas/Downloads/Banco0.db')
 c = conn.cursor()
 
 def tableCreate():
@@ -96,41 +96,60 @@ def separaHeD(df):
     #print df2.describe()
     return df2
 
+def readProducts():
+    sql = "SELECT * FROM PRODUTOS"
+    result = c.execute(sql)
+    for i, row in enumerate(result):
+            #print i
+        print str(row).replace(", u'","'")
+
+
+def graphs(df):
+    plt.rc("font", size=8)
+    print "Total Diario"
+    print df.iloc[:,(3,4)].groupby("DATA").sum()
+    df.iloc[:,(3,4)].groupby("DATA").sum().plot()
+    plt.ylabel("R$")
+    plt.title("Total Diario")
+    plt.savefig("/Users/Lucas/Desktop/quinta/TotalDiario.pdf")
+    plt.show()
+
+    print "Total por conta"
+    print df.iloc[:,(1,3)].groupby("CONTA").sum().plot()
+    plt.ylabel("R$")
+    plt.title("Total por conta paga")
+    plt.savefig("/Users/Lucas/Desktop/quinta/TotalporConta.pdf")
+
+    plt.show()
+
+    print "Total de produto por dia:"
+    print df.iloc[:,(2,3,4)].groupby(["NOME","DATA"]).sum()
+
+    print "Total de Vendas de cada produto ate hj:"
+    print df.iloc[:,(2,3,4)].groupby(["NOME"]).sum()
+
+    print "Total de Vendas de cada produto depois ou antes de tal dia"
+    print df[df["DATA"]>"10/09/2015"].iloc[:,(2,3,4)].groupby(["NOME"]).sum()
+
+    #rcParams['figure.figsize'] = 5, 5
+
+    df[df["DATA"]>"10/09/2015"].iloc[:,(2,3,4)].groupby(["NOME"]).sum().plot(kind="bar")
+    plt.ylabel("R$")
+    plt.title("Total de vendas")
+    plt.subplots_adjust(bottom=0.28)
+    plt.savefig("/Users/Lucas/Desktop/quinta/Total.pdf")
+    plt.show()
+
+    df[df["DATA"]>"10/09/2015"].iloc[:,(2,3,4)].groupby(["NOME"]).sum().plot(kind="pie", subplots=True)
+    plt.ylabel("R$")
+    plt.title("Total de vendas")
+    plt.savefig("/Users/Lucas/Desktop/quinta/Total2.pdf")
+    plt.show()
+    return df
+
+
 df = readToDf()
 df = separaHeD(df)
 print "---------------"
+graphs(df)
 
-
-print "Total Diario"
-print df.iloc[:,(3,4)].groupby("DATA").sum()
-df.iloc[:,(3,4)].groupby("DATA").sum().plot()
-plt.ylabel("R$")
-plt.title("Total Diario")
-plt.savefig("/Users/Lucas/Desktop/quinta/TotalDiario.pdf")
-plt.show()
-
-print "Total por conta"
-print df.iloc[:,(1,3)].groupby("CONTA").sum().plot()
-plt.ylabel("R$")
-plt.title("Total por conta paga")
-plt.savefig("/Users/Lucas/Desktop/quinta/TotalporConta.pdf")
-
-plt.show()
-
-print "Total de produto por dia:"
-print df.iloc[:,(2,3,4)].groupby(["NOME","DATA"]).sum()
-
-print "Total de Vendas de cada produto ate hj:"
-print df.iloc[:,(2,3,4)].groupby(["NOME"]).sum()
-
-print "Total de Vendas de cada produto depois ou antes de tal dia"
-print df[df["DATA"]>"10/09/2015"].iloc[:,(2,3,4)].groupby(["NOME"]).sum()
-
-#rcParams['figure.figsize'] = 5, 5
-
-df[df["DATA"]>"10/09/2015"].iloc[:,(2,3,4)].groupby(["NOME"]).sum().plot(kind="bar")
-plt.ylabel("R$")
-plt.title("Total de vendas")
-plt.savefig("/Users/Lucas/Desktop/quinta/Total.pdf")
-plt.subplots_adjust(bottom=0.22)
-plt.show()
